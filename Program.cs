@@ -1,17 +1,23 @@
-﻿class Program {
-    static void Main(String[] args) {
-        var frutas = new string[]{
-            "Sandia",
-            "Fresa",
-            "Mango",
-            "Mango de Azucar",
-            "Mango de Tomy"
-        };
+﻿LinqQuerys queries = new LinqQuerys();
 
-        var mangoList = frutas.Where(p=> p.StartsWith("Mango")).ToList();
+// All Books
+printValues(queries.allCollection());
 
-        mangoList.ForEach(p=> Console.WriteLine(p));
+// Books published after 2000
+printValues(queries.filterYear(2010, "after"));
+
+// Books that have more than 250 pages and the title contains the words "in Action"
+printValues(queries.filterPages());
+
+
+
+// METHODS
+void printValues(IEnumerable<Book> bookList)
+{
+    Console.WriteLine("{0, -60} {1, 15} {2, 15}\n", "Title", "Pages", "Date of Publish");
+    foreach(var item in bookList)
+    {
+        Console.WriteLine("{0, -60} {1, 15} {2, 15}", item.Title, item.PageCount, item.PublishedDate.ToShortDateString());
     }
 }
-
 
