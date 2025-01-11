@@ -36,6 +36,104 @@ public class LinqQuerys
 
     public IEnumerable<Book> filterPages()
     {
-        return collection.Where(book => book.PageCount > 250 && book.Title.Contains("in Action"));
+        return collection
+        .Where(book => book.PageCount > 250 && book.Title.Contains("in Action"));
+    }
+
+    public bool allBooksHaveStatus()
+    {
+        return collection.All(book => book.Status != string.Empty);
+    }
+
+    public bool isPublishedAfter(int year)
+    {
+        return collection.Any(book => book.PublishedDate.Year > year);
+    }
+
+    public bool isPublishedIn(int year)
+    {
+        return collection.Any(book => book.PublishedDate.Year == year);
+    }
+
+    public IEnumerable<Book> filterCategories(string category)
+    {
+        return collection
+        .Where(book => book.Categories
+        .Contains(category));
+    }
+
+    public IEnumerable<Book> orderBooks(string category)    
+    {
+        return collection
+        .Where(book => book.Categories.Contains(category) && book.PageCount > 0)
+        .OrderBy(book => book.Title);
+    } 
+
+    public IEnumerable<Book> orderBooksByPageCountDescending(string category = "all")
+    {
+        if(category == "all" || category == "")
+        {
+            return collection
+            .Where(book => book.PageCount > 450)
+            .OrderByDescending(book => book.PageCount);
+        }
+        else    
+        {
+            return collection
+            .Where(book => book.Categories
+            .Contains(category) && book.PageCount > 450)
+            .OrderByDescending(book => book.PageCount);
+        }
+    }
+
+    public IEnumerable<Book> initialBooksOrderedByPublishedDate(int quantity, string category = "all")
+    {
+        if(category == "all" || category == "")
+        {
+            return collection
+            .Where(book => book.PageCount > 0)
+            .OrderByDescending(book => book.PublishedDate)
+            .Take(quantity);
+        }
+        else    
+        {
+            return collection
+            .Where(book => book.Categories.Contains(category) && book.PageCount > 0)
+            .OrderByDescending(book => book.PublishedDate)
+            .Take(quantity);
+        }
+    }
+
+    public IEnumerable<Book> skipBooksOrderedByPublishedDate(int taken, int skipped, string category = "all")
+    {
+        if(category == "all" || category == "")
+        {
+            return collection
+            .Where(book => book.PageCount > 400)
+            .OrderByDescending(book => book.PublishedDate)
+            .Take(taken)
+            .Skip(skipped);
+        }
+        else    
+        {
+            return collection
+            .Where(book => book.Categories.Contains(category) && book.PageCount > 400)
+            .OrderByDescending(book => book.PublishedDate)
+            .Take(taken)
+            .Skip(skipped);
+        }
+    }
+
+    public IEnumerable<Book> selectDataInBooks(int taken)
+    {
+        return collection
+        .Where(book => book.PageCount > 0)
+        .OrderByDescending(book => book.PageCount)
+        .Take(taken)
+        .Select(book => new Book() {
+            Title = book.Title,
+            PageCount = book.PageCount,
+            PublishedDate = book.PublishedDate
+        });
     }
 }
