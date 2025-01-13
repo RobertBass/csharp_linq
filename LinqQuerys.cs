@@ -136,4 +136,92 @@ public class LinqQuerys
             PublishedDate = book.PublishedDate
         });
     }
+
+    public int countBooks()
+    {
+        return collection.Count(book => book.PageCount >= 200 && book.PageCount <= 500);
+    }
+
+    public DateTime minDatePublished()
+    {
+        return collection
+        .Min(book => book.PublishedDate);
+    }
+
+    public DateTime maxDatePublished()
+    {
+        return collection
+        .Max(book => book.PublishedDate);
+    }
+
+    public int maxPageCount()
+    {
+        return collection
+        .Max(book => book.PageCount);
+    }
+
+    public IEnumerable<Book> maxPageCountBooks()
+    {
+        return collection
+        .Where(book => book.PageCount == maxPageCount());
+    }
+
+    public Book minPageCountBooks()
+    {
+        return collection
+        .Where(book => book.PageCount > 0)
+        .MinBy(book => book.PageCount);
+    }
+
+    public Book newestBook()
+    {
+        return collection
+        .MaxBy(book => book.PublishedDate);
+    }
+
+    public int addOfPages()
+    {
+        return collection
+        .Where(book => book.PageCount > 0 && book.PageCount <= 500)
+        .Sum(book => book.PageCount);
+    }
+
+    public string bookTitles()
+    {
+        return collection
+        .Where(book => book.PublishedDate.Year > 1997 && book.PublishedDate.Year < 2015)
+        .Select(book => book.Title)
+        .Aggregate((current, next) => current + "\n- "  + next);
+    }
+
+    public double averageBookPages()
+    {
+        return collection
+        .Where(book => book.PageCount > 0)
+        .Average(book => book.PageCount);
+    }
+
+    public IEnumerable<IGrouping<int, Book>> groupBooksByYear()
+    {
+        return collection
+        .Where(book => book.PublishedDate.Year > 2000 && book.PageCount > 0)
+        .GroupBy(book => book.PublishedDate.Year);
+    }
+
+    // Implementar funcion lookup que devuelva un diccionario con los libros dependiendo de la letra de inicio del titulo
+    public ILookup<char, Book> lookUpBooks()
+    {
+        return collection
+        .Where(book => book.PageCount > 0)
+        .ToLookup(book => book.Title[0], book => book);
+    }
+
+    public IEnumerable<Book> joinCollections(int year, int pages)
+    {
+        var booksFrom = collection.Where(book => book.PublishedDate.Year >= year);
+        var booksPages = collection.Where(book => book.PageCount >= pages);
+        return booksFrom
+       .Join(booksPages, x => x.Title, y => y.Title, (x, y) => x);
+    }
+
 }
